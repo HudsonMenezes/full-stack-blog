@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import articles from "./article-content";
-import { ArticlesList } from "../components/ArticlesList";
-import { NotFoundPage } from "./NotFoundPage";
 import axios from "axios";
+import { NotFoundPage } from "./NotFoundPage";
+import articles from "./article-content";
 
 export const ArticlePage = () => {
   const [articleInfo, setArticleInfo] = useState({ upvotes: 0, comments: [] });
+  const { articleId } = useParams();
 
   useEffect(() => {
     const loadArticleInfo = async () => {
@@ -14,15 +14,16 @@ export const ArticlePage = () => {
       const newArticleInfo = response.data;
       setArticleInfo(newArticleInfo);
     };
+
+    loadArticleInfo();
   }, []);
 
-  const params = useParams();
-  const articleId = params.articleId;
   const article = articles.find((article) => article.name === articleId);
 
   if (!article) {
     return <NotFoundPage />;
   }
+
   return (
     <>
       <h1>{article.title}</h1>

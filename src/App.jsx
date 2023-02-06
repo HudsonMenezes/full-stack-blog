@@ -1,6 +1,6 @@
 import { HomePage } from "./pages/HomePage";
 import { AboutPage } from "./pages/AboutPage";
-import { ArticleListPage } from "./pages/ArticleListPage";
+import ArticleListPage from "./pages/ArticleListPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ArticlePage } from "./pages/ArticlePage";
 

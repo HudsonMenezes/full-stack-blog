@@ -8,31 +8,46 @@ import { AddCommentForm } from "../components/AddCommentForm";
 import { useUser } from "../hooks/useUser";
 
 export const ArticlePage = () => {
-  const [articleInfo, setArticleInfo] = useState({ upvotes: 0, comments: [] });
-
+  const [articleInfo, setArticleInfo] = useState({
+    upvotes: 0,
+    comments: [],
+    canUpvote: false,
+  });
+  const { canUpvote } = articleInfo;
   const { articleId } = useParams();
-  const article = articles.find((article) => article.name === articleId);
 
   const { user, isLoading } = useUser();
 
   useEffect(() => {
     const loadArticleInfo = async () => {
+      const token = user && (await user.getIdToken());
+      const headers = token ? { authtoken: token } : {};
       const response = await axios.get(
-        `http://localhost:8000/api/articles/${articleId}`
+        `http://localhost:8000/api/articles/${articleId}`,
+        {
+          headers,
+        }
       );
       const newArticleInfo = response.data;
       setArticleInfo(newArticleInfo);
     };
 
-    loadArticleInfo();
-  }, []);
+    if (isLoading) {
+      loadArticleInfo();
+    }
+  }, [isLoading, user]);
+
+  const article = articles.find((article) => article.name === articleId);
 
   const addUpvote = async () => {
+    const token = user && (await user.getIdToken());
+    const headers = token ? { authtoken: token } : {};
     const response = await axios.put(
-      `http://localhost:8000/api/articles/${articleId}/upvote`
+      `http://localhost:8000/api/articles/${articleId}/upvote`,
+      null,
+      { headers }
     );
     const updatedArticle = response.data;
-
     setArticleInfo(updatedArticle);
   };
 
@@ -45,7 +60,9 @@ export const ArticlePage = () => {
       <h1>{article.title}</h1>
       <div className="upvotes-section">
         {user ? (
-          <button onClick={addUpvote}>Upvote</button>
+          <button onClick={addUpvote}>
+            {canUpvote ? "Upvote" : "Already Upvoted"}
+          </button>
         ) : (
           <button>Log in to upvote</button>
         )}
